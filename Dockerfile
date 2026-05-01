@@ -1,12 +1,10 @@
-FROM python:stable-alpine as firststage
+FROM python:3.12-slim
+
 WORKDIR /myapp
+
 COPY requirements.txt .
-RUN pip install -r requirements.txt --production
+RUN pip install --no-cache-dir -r requirements.txt
+
 COPY . .
 
-FROM firststage as final
-RUN pip install -r requirements.txt --production
-COPY . .
-CMD ["python" , "app.py"]
-
-
+CMD ["python", "app.py"]
