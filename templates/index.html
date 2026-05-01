@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funny Joke Picker 😂</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .emoji {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .joke-box {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .setup {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .punchline {
+            font-size: 1.3em;
+            color: #764ba2;
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .punchline.show {
+            display: block;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .reveal-btn {
+            background: #28a745;
+        }
+
+        .reveal-btn:hover {
+            background: #218838;
+        }
+
+        .next-btn {
+            background: #ff6b6b;
+        }
+
+        .next-btn:hover {
+            background: #ee5a5a;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .footer {
+            margin-top: 30px;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .setup {
+                font-size: 1.2em;
+            }
+            
+            .punchline {
+                font-size: 1.1em;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="emoji">🎭😂</div>
+        <h1>Funny Joke Picker</h1>
+        <p>Click the button for a guaranteed laugh!</p>
+        
+        <div class="joke-box">
+            <div class="setup" id="setup">Click "New Joke" to start!</div>
+            <div class="punchline" id="punchline"></div>
+        </div>
+        
+        <div class="button-group">
+            <button class="next-btn" onclick="getNewJoke()">🎲 New Joke</button>
+            <button class="reveal-btn" onclick="revealPunchline()">😄 Reveal Punchline</button>
+        </div>
+        
+        <div class="footer">
+            <p>🤣 10 hilarious jokes included! 🤣</p>
+        </div>
+    </div>
+
+    <script>
+        let currentJoke = null;
+        
+        async function getNewJoke() {
+            try {
+                const response = await fetch('/api/random-joke');
+                currentJoke = await response.json();
+                
+                document.getElementById('setup').textContent = currentJoke.setup;
+                document.getElementById('punchline').textContent = currentJoke.punchline;
+                document.getElementById('punchline').classList.remove('show');
+                
+                // Add a little celebration animation
+                const button = event.target;
+                button.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    button.style.transform = '';
+                }, 200);
+            } catch (error) {
+                console.error('Error fetching joke:', error);
+                document.getElementById('setup').textContent = 'Oops! Something went wrong. Please try again!';
+            }
+        }
+        
+        function revealPunchline() {
+            if (currentJoke && currentJoke.punchline) {
+                const punchlineElement = document.getElementById('punchline');
+                punchlineElement.classList.add('show');
+                
+                // Optional: Add a little laugh sound effect (if browser allows)
+                // This is just for fun - no actual sound added
+            } else if (!currentJoke) {
+                alert('Please click "New Joke" first! 😊');
+            }
+        }
+        
+        // Load a random joke on page load
+        window.addEventListener('load', () => {
+            // Simulate click on new joke button after 500ms
+            setTimeout(() => {
+                const nextButton = document.querySelector('.next-btn');
+                if (nextButton) {
+                    nextButton.click();
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>
